@@ -1,0 +1,52 @@
+#include <string>
+#include <vector>
+#include <map>
+#include <sstream>
+using namespace std;
+vector<string> globalRecord;
+void getUserData(int n, map<string,string>& userMap, vector<pair<string,string>>& userCmd) {
+	
+	for (int i = 0; i < n; i++) {
+		stringstream ss(globalRecord[i]);
+		string cmd;
+		string id;
+		string name;
+		ss >> cmd;
+		ss >> id;
+		if (cmd != "Leave") {
+			ss >> name;
+			if (userMap.find(id) == userMap.end()) {
+				userMap.insert(make_pair(id, name));
+			}
+			else {
+				userMap.find(id)->second = name;
+			}
+		}
+		if (cmd != "Change") {
+			if (cmd == "Enter") {
+				cmd = "님이 들어왔습니다.";
+			}
+			else{
+				cmd = "님이 나갔습니다.";
+			}
+			userCmd.push_back(make_pair(id, cmd));
+		}
+	}
+	return;
+}
+vector<string> solution(vector<string> record) {
+	vector<string> answer;
+	globalRecord = record;
+	map<string, string> userMap; // (id, userName)
+	vector<pair<string, string>> userCmd; // (id, cmd)
+	int Size = record.size();
+	getUserData(Size, userMap, userCmd);
+	int userCmdSize = userCmd.size();
+	for (int i = 0; i < userCmdSize; i++) {
+		string ret = "";
+		ret.append(userMap.find(userCmd[i].first)->second);
+		ret.append(userCmd[i].second);
+		answer.push_back(ret);
+	}
+	return answer;
+}
